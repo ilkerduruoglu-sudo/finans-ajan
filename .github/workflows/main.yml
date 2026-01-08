@@ -1,0 +1,28 @@
+name: Finans Ajanı Günlük Rapor
+
+on:
+  schedule:
+    # Saatler UTC (Dünya Saati) üzerindendir. 
+    # Türkiye saati için 3 saat çıkarmalısın.
+    # 09:00, 15:00 ve 21:00 (TR Saati) için:
+    - cron: '0 6,12,18 * * *'
+  workflow_dispatch: # Bu satır manuel çalıştırmanı sağlar
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kodu Çek
+        uses: actions/checkout@v3
+
+      - name: Python Kur
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Kütüphaneleri Yükle
+        run: |
+          pip install -r requirements.txt
+
+      - name: Ajanı Çalıştır
+        run: python main.py
