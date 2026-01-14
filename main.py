@@ -54,6 +54,7 @@ pusu_hisseleri = [
     'VNO', 'VRSK', 'VRSN', 'VTR', 'VTRS', 'WAB', 'WAT', 'WDC', 'WEC', 'WHR',
     'WMB', 'WRB', 'WST', 'WTW', 'WY', 'WYNN', 'XEL', 'XYL', 'YUM', 'ZBH',
     'ZBRA', 'ZION'
+]
 
 def mavilim_w(df):
     m1 = df['Close'].rolling(window=3).mean()
@@ -74,13 +75,10 @@ def veri_analizi(ticker):
         ma200 = float(ma200_serisi.iloc[-1])
         dist_ma = ((fiyat - ma200) / ma200) * 100
         
-        # RSI Hesapla
         delta = fiyatlar.diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
         rsi = 100 - (100 / (1 + (gain.iloc[-1] / (loss.iloc[-1] + 1e-9))))
-        
-        # MavilimW Hesapla (Hattori Hanzo için)
         mav_deger = float(mavilim_w(df).iloc[-1])
         
         return {
@@ -92,7 +90,6 @@ def veri_analizi(ticker):
 def kategori_yaz(baslik, semboller):
     section = f"=== {baslik} ===\n"
     sonuclar = []
-    
     for sym, isim in semboller.items():
         d = veri_analizi(sym)
         if d:
@@ -114,14 +111,10 @@ def hattori_hanzo_taramasi():
     print("⚔️ Hattori Hanzo pusuya yatmış balıkları arıyor...")
     pusu_raporu = "\n⚓ **HATTORI HANZO PUSU LİSTESİ**\n"
     bulunan_sayisi = 0
-    
-    # Listenin adının pusu_hisseleri olduğundan emin ol
     for ticker in pusu_hisseleri:
         d = veri_analizi(ticker)
-        if d and "ma200" in d and "rsi" in d: # Veri tam mı kontrol et
-            # Pusu Kriteri: MA200'e %5 yakınlık VE RSI < 45
+        if d and "ma200" in d and "rsi" in d:
             if abs(d['ma200']) < 5 and d['rsi'] < 45:
-                # d['mavilim'] değerinin hesaplandığından emin olalım
                 mav_fiyat = d.get('mavilim', d['fiyat']) 
                 durum = "🚀 GÜÇLÜ PUSU" if d['fiyat'] > mav_fiyat else "🚩 PUSU"
                 pusu_raporu += f"{durum}: {ticker}\n💰 Fiyat: {d['fiyat']:.2f} | RSI: {d['rsi']:.1f}\n📏 MA200 Uzaklık: %{d['ma200']:.1f}\n\n"
@@ -144,16 +137,13 @@ def ana_rapor():
     
     final_msg = f"🏛 **STRATEJİK MİMARİ PANEL**\n📅 {datetime.now().strftime('%d.%m.%Y %H:%M')}\n\n"
     toplam_sonuc = []
-    
     for baslik, liste in pazarlar.items():
         metin, veriler = kategori_yaz(baslik, liste)
         final_msg += metin
         toplam_sonuc.extend(veriler)
     
-    # --- Hattori Hanzo Bölümünü Ekle ---
     final_msg += hattori_hanzo_taramasi()
     
-    # --- STRATEJİK FIRSATLAR VE UYARILAR ---
     alarmlar = []
     for s in toplam_sonuc:
         if s['rsi'] < 33: alarmlar.append(f"🔥 {s['isim']} AŞIRI SATIM (RSI: {s['rsi']:.1f})")
