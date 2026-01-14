@@ -109,20 +109,28 @@ def kategori_yaz(baslik, semboller):
 
 def hattori_hanzo_taramasi():
     print("⚔️ Hattori Hanzo pusuya yatmış balıkları arıyor...")
-    pusu_raporu = "\n⚓ **HATTORI HANZO PUSU LİSTESİ**\n"
-    bulunan_sayisi = 0
+    bulunanlar = []
+    
     for ticker in pusu_hisseleri:
         d = veri_analizi(ticker)
         if d and "ma200" in d and "rsi" in d:
             if abs(d['ma200']) < 5 and d['rsi'] < 45:
                 mav_fiyat = d.get('mavilim', d['fiyat']) 
                 durum = "🚀 GÜÇLÜ PUSU" if d['fiyat'] > mav_fiyat else "🚩 PUSU"
-                pusu_raporu += f"{durum}: {ticker}\n💰 Fiyat: {d['fiyat']:.2f} | RSI: {d['rsi']:.1f}\n📏 MA200 Uzaklık: %{d['ma200']:.1f}\n\n"
-                bulunan_sayisi += 1
+                bulunanlar.append({
+                    "msg": f"{durum}: {ticker}\n💰 Fiyat: {d['fiyat']:.2f} | RSI: {d['rsi']:.1f}\n📏 MA200 Uzaklık: %{d['ma200']:.1f}\n\n",
+                    "rsi": d['rsi']
+                })
                 
-    if bulunan_sayisi == 0:
+    if not bulunanlar:
         return "\n⚓ **HATTORI HANZO:** Okyanus sakin, pusuya uygun balık yok.\n"
-    return pusu_raporu
+    
+    # RSI değeri en düşük (en ucuz) olan ilk 20 hisseyi seç
+    bulunanlar.sort(key=lambda x: x['rsi'])
+    final_list = [item['msg'] for item in bulunanlar[:20]]
+    
+    pusu_raporu = "\n⚓ **HATTORI HANZO PUSU LİSTESİ (En İyi 20)**\n"
+    return pusu_raporu + "".join(final_list)
 
 def ana_rapor():
     pazarlar = {
