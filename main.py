@@ -8,9 +8,52 @@ from datetime import datetime
 TOKEN = "7549980125:AAFxvyz5jVm6SKMapJI9A3BlO6fX--kaxSM"
 CHAT_ID = "1958158640"
 
-# --- HATTORI HANZO PUSU LİSTESİ ---
-# Buraya istediğin hisseleri ekleyebilirsin
-pusu_hisseleri = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'META', 'GOOGL', 'TSLA', 'NFLX', 'AMD', 'AVGO', 'BA', 'VOW3.DE', 'EXC', 'WTW']
+# --- HATTORI HANZO S&P 500 TAM PUSU LİSTESİ ---
+pusu_hisseleri = [
+    'AAPL', 'MSFT', 'NVDA', 'AMZN', 'META', 'GOOGL', 'GOOG', 'BRK-B', 'LLY', 'AVGO',
+    'JPM', 'TSLA', 'UNH', 'V', 'XOM', 'MA', 'JNJ', 'PG', 'COST', 'HD',
+    'ABBV', 'ORCL', 'NFLX', 'WMT', 'KO', 'BAC', 'AMD', 'CVX', 'PEP', 'CRM',
+    'ADBE', 'LIN', 'PM', 'ACN', 'TMO', 'WFC', 'IBM', 'DIS', 'ABT', 'CSCO',
+    'INTU', 'QCOM', 'AXP', 'CAT', 'GE', 'TXN', 'DHR', 'VZ', 'AMAT', 'MS',
+    'AMGN', 'ISRG', 'PFE', 'GS', 'NEE', 'LOW', 'RTX', 'UNP', 'HON', 'SYK',
+    'BKNG', 'SPGI', 'T', 'TJX', 'ETN', 'PGR', 'VRTX', 'LRCX', 'BSX', 'REGN',
+    'BLK', 'MU', 'C', 'MMC', 'ADP', 'SCHW', 'PLTR', 'ADI', 'MDLZ',
+    'GILD', 'BA', 'LMT', 'FIS', 'WM', 'DE', 'BMY', 'CB', 'HCA', 'UBER',
+    'KLAC', 'CDNS', 'ANET', 'SNPS', 'MDT', 'SHW', 'MO', 'INTC', 'ZTS', 'EOG',
+    'PH', 'APH', 'ORLY', 'CTAS', 'TGT', 'CRWD', 'MCK', 'MAR', 'USB', 'ITW',
+    'CL', 'WELL', 'CSX', 'EMR', 'CMG', 'BDX', 'ADSK', 'AON', 'MCO', 'ECL',
+    'PNC', 'ICE', 'FDX', 'D', 'NEM', 'HUM', 'NSC', 'F', 'GD', 'EL', 
+    'AIG', 'KDP', 'KVUE', 'ROP', 'O', 'COR', 'MPC', 'EW', 'PSA', 'TEL', 
+    'DXCM', 'STZ', 'AJG', 'MCHP', 'NOC', 'TRV', 'TFC', 'MET', 'PCAR', 'MSI', 
+    'SRE', 'NXPI', 'MNST', 'TT', 'PYPL', 'DASH', 'CPRT', 'VLO', 'IQV', 
+    'PAYX', 'AZO', 'IDXX', 'AEP', 'GWW', 'ODFL', 'CHTR', 'FSLR', 'BKR', 'DLTR', 
+    'DVN', 'GEHC', 'HLT', 'OKE', 'PCG', 'PSX', 'ROST', 'SBAC', 'STT', 'WBD',
+    'MCD', 'MGM', 'MTCH', 'NRG', 'PEG', 'QRVO', 'BXP', 'CME', 'EXC', 'FAST', 'GEN',
+    'A', 'ADM', 'AKAM', 'ALB', 'ALGN', 'ALLE', 'AMCR', 'AME', 'AMP', 'AMT',
+    'AOS', 'APA', 'APD', 'ARE', 'ATO', 'AVB', 'AWK', 'AXON', 'BALL', 'BBWI',
+    'BEN', 'BG', 'BIIB', 'BIO', 'BK', 'BRO', 'BWA', 'CARR', 'CBRE', 'CCI',
+    'CCL', 'CDW', 'CE', 'CEG', 'CF', 'CFG', 'CHD', 'CHRW', 'CI', 'CINF',
+    'CLX', 'CMA', 'CMCSA', 'CMI', 'CMS', 'CNC', 'CNP', 'COF', 'COO', 'CPB',
+    'CPT', 'CRL', 'CSGP', 'CTRA', 'CTSH', 'CTVA', 'CVS', 'DTE', 'DUK', 'DVA',
+    'EFX', 'EG', 'EIX', 'ENPH', 'EPAM', 'EQIX', 'EQR', 'ES', 'ESS', 'EVRG',
+    'EXC', 'EXPD', 'EXPE', 'EXR', 'FANG', 'FCX', 'FDS', 'FE', 'FFIV', 'FITB',
+    'FMC', 'FOXA', 'FRT', 'FTNT', 'FTV', 'GDDY', 'GNRC', 'GRMN', 'HAS', 'HBAN',
+    'HIG', 'HII', 'HOLX', 'HPQ', 'HRL', 'HSIC', 'HST', 'HSY', 'HUBB', 'IEX',
+    'IFF', 'ILMN', 'INCY', 'INVH', 'IP', 'IPG', 'IRM', 'IT', 'IVZ', 'JBHT',
+    'JKHY', 'K', 'KEY', 'KEYS', 'KIM', 'KMB', 'KMI', 'KMX', 'KR', 'L',
+    'LDOS', 'LEN', 'LH', 'LHX', 'LNC', 'LNT', 'LULU', 'LUV', 'LVS', 'LW',
+    'LYB', 'LYV', 'MAA', 'MAS', 'MHK', 'MKC', 'MLM', 'MOH', 'MOS', 'MPWR',
+    'MRK', 'MRNA', 'MSCI', 'MTB', 'MTD', 'NCLH', 'NDAQ', 'NDSN', 'NFE', 'NI',
+    'NKE', 'NTRS', 'NUE', 'NVCR', 'NVR', 'NWL', 'NWSA', 'NWS', 'OMC', 'ON',
+    'OTIS', 'OXY', 'PAYC', 'PBI', 'PENN', 'PFG', 'PHM', 'PKG', 'PLD', 'PNR',
+    'PNW', 'POOL', 'PPG', 'PRU', 'PTC', 'PWR', 'RCL', 'RF', 'RHI', 'RJF',
+    'RL', 'RMD', 'ROK', 'ROL', 'RSG', 'RVTY', 'RYAAY', 'SBUX', 'SEE', 'SJM',
+    'SLB', 'SNA', 'SO', 'SPG', 'STX', 'SWK', 'SWKS', 'SYF', 'SYK', 'SYY', 'TAP',
+    'TDG', 'TDY', 'TECH', 'TER', 'TFX', 'TMUS', 'TPR', 'TRMB', 'TROW', 'TSCO',
+    'TSN', 'TTWO', 'TYL', 'UAL', 'UDR', 'UHS', 'ULTA', 'VFC', 'VICI', 'VMC',
+    'VNO', 'VRSK', 'VRSN', 'VTR', 'VTRS', 'WAB', 'WAT', 'WDC', 'WEC', 'WHR',
+    'WMB', 'WRB', 'WST', 'WTW', 'WY', 'WYNN', 'XEL', 'XYL', 'YUM', 'ZBH',
+    'ZBRA', 'ZION'
 
 def mavilim_w(df):
     m1 = df['Close'].rolling(window=3).mean()
