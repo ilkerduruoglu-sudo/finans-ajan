@@ -115,12 +115,15 @@ def hattori_hanzo_taramasi():
     pusu_raporu = "\n⚓ **HATTORI HANZO PUSU LİSTESİ**\n"
     bulunan_sayisi = 0
     
+    # Listenin adının pusu_hisseleri olduğundan emin ol
     for ticker in pusu_hisseleri:
         d = veri_analizi(ticker)
-        if d:
+        if d and "ma200" in d and "rsi" in d: # Veri tam mı kontrol et
             # Pusu Kriteri: MA200'e %5 yakınlık VE RSI < 45
             if abs(d['ma200']) < 5 and d['rsi'] < 45:
-                durum = "🚀 GÜÇLÜ PUSU" if d['fiyat'] > d['mavilim'] else "🚩 PUSU"
+                # d['mavilim'] değerinin hesaplandığından emin olalım
+                mav_fiyat = d.get('mavilim', d['fiyat']) 
+                durum = "🚀 GÜÇLÜ PUSU" if d['fiyat'] > mav_fiyat else "🚩 PUSU"
                 pusu_raporu += f"{durum}: {ticker}\n💰 Fiyat: {d['fiyat']:.2f} | RSI: {d['rsi']:.1f}\n📏 MA200 Uzaklık: %{d['ma200']:.1f}\n\n"
                 bulunan_sayisi += 1
                 
