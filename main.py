@@ -8,9 +8,17 @@ from datetime import datetime
 TOKEN = "7549980125:AAFxvyz5jVm6SKMapJI9A3BlO6fX--kaxSM"
 CHAT_ID = "1958158640"
 
+# --- HATTORI HANZO PUSU LİSTESİ ---
+# Buraya istediğin hisseleri ekleyebilirsin
+pusu_hisseleri = ['AAPL', 'MSFT', 'NVDA', 'AMZN', 'META', 'GOOGL', 'TSLA', 'NFLX', 'AMD', 'AVGO', 'BA', 'VOW3.DE', 'EXC', 'WTW']
+
+def mavilim_w(df):
+    m1 = df['Close'].rolling(window=3).mean()
+    m2 = m1.rolling(window=5).mean()
+    return m2
+
 def veri_analizi(ticker):
     try:
-        # Veriyi çek ve MultiIndex hatasını temizle
         df = yf.download(ticker, period="1y", interval="1d", progress=False)
         if df.empty or len(df) < 200: return None
         if isinstance(df.columns, pd.MultiIndex): df.columns = df.columns.get_level_values(0)
@@ -19,7 +27,8 @@ def veri_analizi(ticker):
         fiyat = float(fiyatlar.iloc[-1])
         dun = float(fiyatlar.iloc[-2])
         degisim = ((fiyat - dun) / dun) * 100
-        ma200 = float(fiyatlar.rolling(window=200).mean().iloc[-1])
+        ma200_serisi = fiyatlar.rolling(window=200).mean()
+        ma200 = float(ma200_serisi.iloc[-1])
         dist_ma = ((fiyat - ma200) / ma200) * 100
         
         # RSI Hesapla
@@ -28,7 +37,13 @@ def veri_analizi(ticker):
         loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
         rsi = 100 - (100 / (1 + (gain.iloc[-1] / (loss.iloc[-1] + 1e-9))))
         
-        return {"fiyat": fiyat, "dun": dun, "degisim": degisim, "rsi": rsi, "ma200": dist_ma}
+        # MavilimW Hesapla (Hattori Hanzo için)
+        mav_deger = float(mavilim_w(df).iloc[-1])
+        
+        return {
+            "fiyat": fiyat, "dun": dun, "degisim": degisim, 
+            "rsi": rsi, "ma200": dist_ma, "mavilim": mav_deger
+        }
     except: return None
 
 def kategori_yaz(baslik, semboller):
@@ -52,11 +67,28 @@ def kategori_yaz(baslik, semboller):
         return section, sonuclar
     return "", []
 
+def hattori_hanzo_taramasi():
+    print("⚔️ Hattori Hanzo pusuya yatmış balıkları arıyor...")
+    pusu_raporu = "\n⚓ **HATTORI HANZO PUSU LİSTESİ**\n"
+    bulunan_sayisi = 0
+    
+    for ticker in pusu_hisseleri:
+        d = veri_analizi(ticker)
+        if d:
+            # Pusu Kriteri: MA200'e %5 yakınlık VE RSI < 45
+            if abs(d['ma200']) < 5 and d['rsi'] < 45:
+                durum = "🚀 GÜÇLÜ PUSU" if d['fiyat'] > d['mavilim'] else "🚩 PUSU"
+                pusu_raporu += f"{durum}: {ticker}\n💰 Fiyat: {d['fiyat']:.2f} | RSI: {d['rsi']:.1f}\n📏 MA200 Uzaklık: %{d['ma200']:.1f}\n\n"
+                bulunan_sayisi += 1
+                
+    if bulunan_sayisi == 0:
+        return "\n⚓ **HATTORI HANZO:** Okyanus sakin, pusuya uygun balık yok.\n"
+    return pusu_raporu
+
 def ana_rapor():
-    # Görsellerdeki yapıya göre tam sıralı liste
     pazarlar = {
         "🪙 KRİPTO": {"BTC-USD": "Bitcoin", "ETH-USD": "Ethereum"},
-        "🚨 ÖZEL TAKİP (Zarar Durumu)": {"BA": "Boeing (BA)", "VOW3.DE": "Volkswagen (VOW3)"},
+        "🚨 ÖZEL TAKİP": {"BA": "Boeing (BA)", "VOW3.DE": "Volkswagen (VOW3)"},
         "🏛 ENDEKSLER": {"^GSPC": "S&P 500", "NQ=F": "Nasdaq", "YM=F": "Dow Jones"},
         "🧭 RİSK PUSULASI": {"DX-Y.NYB": "DXY", "^VIX": "VIX"},
         "🇺🇸 ABD ETF": {"VOO": "VOO", "QQQ": "QQQ", "SCHD": "SCHD", "IWM": "IWM", "XLK": "XLK", "XLF": "XLF"},
@@ -72,27 +104,28 @@ def ana_rapor():
         final_msg += metin
         toplam_sonuc.extend(veriler)
     
+    # --- Hattori Hanzo Bölümünü Ekle ---
+    final_msg += hattori_hanzo_taramasi()
+    
     # --- STRATEJİK FIRSATLAR VE UYARILAR ---
     alarmlar = []
     for s in toplam_sonuc:
-        # RSI 33 Altı = Çok Ucuz, 70 Üstü = Çok Şişkin
         if s['rsi'] < 33: alarmlar.append(f"🔥 {s['isim']} AŞIRI SATIM (RSI: {s['rsi']:.1f})")
         if s['rsi'] > 70: alarmlar.append(f"⚠️ {s['isim']} AŞIRI ŞİŞKİN (RSI: {s['rsi']:.1f})")
-        # MA200 Altı = Uzun vadeli toplama bölgesi
         if s['ma200'] < 0: alarmlar.append(f"📍 {s['isim']} MA200 ALTI (İndirimli!)")
 
     if alarmlar:
-        final_msg += "⚠️ **STRATEJİK ANALİZ NOTLARI:**\n" + "\n".join(list(set(alarmlar)))
+        final_msg += "\n⚠️ **STRATEJİK ANALİZ NOTLARI:**\n" + "\n".join(list(set(alarmlar)))
         
     return final_msg
 
 if __name__ == "__main__":
-    print("Mimar verileri topluyor, raporun son hali hazırlanıyor...")
+    print("Mimar ve Hattori Hanzo iş birliğiyle rapor hazırlanıyor...")
     rapor = ana_rapor()
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
     res = requests.post(url, data={"chat_id": CHAT_ID, "text": rapor, "parse_mode": "Markdown"})
     
     if res.status_code == 200:
-        print("✅ Başyapıt Telegram'a başarıyla ulaştırıldı!")
+        print("✅ Rapor Telegram'a başarıyla ulaştırıldı!")
     else:
         print(f"❌ Telegram Hatası: {res.text}")
